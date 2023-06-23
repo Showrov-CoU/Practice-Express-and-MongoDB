@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const userSchema = require("../userModel/userSchema");
+const checkMiddleware = require("../checkAuthentication/checkMiddleware");
 
 const userRouter = express.Router();
 
@@ -65,6 +66,21 @@ userRouter.post("/login", async (req, res) => {
   } catch (error) {
     res.status(401).json({
       message: "Authentication Failed!",
+    });
+  }
+});
+
+userRouter.get("/allusers", checkMiddleware, async (req, res) => {
+  // console.log(req.username, req.userid);
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      message: "All users",
+      user: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
     });
   }
 });
